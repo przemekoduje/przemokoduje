@@ -10,6 +10,10 @@ class Ball {
     this.isDragging = false; 
     this.vx = 0; // Prędkość w kierunku x
     this.vy = 0; // Prędkość w kierunku y
+    this.offsetX = 0; // Przesunięcie w osi X
+    this.offsetY = 0; // Przesunięcie w osi Y
+    this.mass = Math.PI * this.radius ** 2; 
+    
   }
 
   draw(ctx) {
@@ -33,8 +37,8 @@ class Ball {
   updatePosition(mouseX, mouseY) {
     this.vx = mouseX - this.x;
     this.vy = mouseY - this.y;
-    this.x = mouseX;
-    this.y = mouseY;
+    this.x = mouseX - this.offsetX; // Uwzględnij przesunięcie w osi X
+    this.y = mouseY - this.offsetY; // Uwzględnij przesunięcie w osi Y
   }
   move(friction) {
     // Aktualizacja pozycji kulki na podstawie prędkości
@@ -72,8 +76,10 @@ const App = () => {
     // Lista kulek
     const balls = [
       new Ball(100, 100, 20, "red"),
+      new Ball(100, 100, 10, "red"),
       new Ball(200, 150, 25, "blue"),
       new Ball(300, 200, 30, "green"),
+      new Ball(300, 400, 30, "yellow"),
       new Ball(300, 400, 30, "yellow"),
     ];
 
@@ -105,6 +111,10 @@ const App = () => {
         if (ball.isClicked(mouseX, mouseY)) {
           ball.isDragging = true;
           draggingBall = ball;
+
+          // Obliczenie przesunięcia między środkiem kulki a punktem kliknięcia
+      ball.offsetX = mouseX - ball.x;
+      ball.offsetY = mouseY - ball.y;
         }
       });
     };
@@ -126,6 +136,9 @@ const App = () => {
         draggingBall = null;
       }
     };
+
+
+
 
     // Funkcja obsługi kolizji
     const handleCollisions = () => {
@@ -153,31 +166,26 @@ const App = () => {
             ball2.x += correctionX;
             ball2.y += correctionY;
     
-            // Obliczenie nowych prędkości po kolizji
-            const speed1 = Math.sqrt(ball1.vx ** 2 + ball1.vy ** 2);
-            const speed2 = Math.sqrt(ball2.vx ** 2 + ball2.vy ** 2);
+            // Obliczenie nowych prędkości po kolizji (uwzględnienie masy)
+            const totalMass = ball1.mass + ball2.mass;
+            const massDifference1 = ball1.mass - ball2.mass;
+            const massDifference2 = ball2.mass - ball1.mass;
     
-            const direction1 = Math.atan2(ball1.vy, ball1.vx);
-            const direction2 = Math.atan2(ball2.vy, ball2.vx);
+            const vx1 = (ball1.vx * massDifference1 + 2 * ball2.mass * ball2.vx) / totalMass;
+            const vy1 = (ball1.vy * massDifference1 + 2 * ball2.mass * ball2.vy) / totalMass;
+            const vx2 = (ball2.vx * massDifference2 + 2 * ball1.mass * ball1.vx) / totalMass;
+            const vy2 = (ball2.vy * massDifference2 + 2 * ball1.mass * ball1.vy) / totalMass;
     
-            const velocityX1 = speed1 * Math.cos(direction1 - angle);
-            const velocityY1 = speed1 * Math.sin(direction1 - angle);
-            const velocityX2 = speed2 * Math.cos(direction2 - angle);
-            const velocityY2 = speed2 * Math.sin(direction2 - angle);
+            ball1.vx = vx1;
+            ball1.vy = vy1;
     
-            const finalVelocityX1 = velocityX2;
-            const finalVelocityX2 = velocityX1;
-    
-            ball1.vx = Math.cos(angle) * finalVelocityX1 + Math.cos(angle + Math.PI / 2) * velocityY1;
-            ball1.vy = Math.sin(angle) * finalVelocityX1 + Math.sin(angle + Math.PI / 2) * velocityY1;
-    
-            ball2.vx = Math.cos(angle) * finalVelocityX2 + Math.cos(angle + Math.PI / 2) * velocityY2;
-            ball2.vy = Math.sin(angle) * finalVelocityX2 + Math.sin(angle + Math.PI / 2) * velocityY2;
+            ball2.vx = vx2;
+            ball2.vy = vy2;
           }
         }
       }
     };
-
+    
     const handleWallCollisions = () => {
       balls.forEach((ball) => {
         // Sprawdzenie kolizji z lewą i prawą krawędzią
