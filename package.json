@@ -3,12 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@react-spring/three": "^9.7.5",
+    "@react-three/fiber": "^8.17.10",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "blotter": "^2.1.0",
+    "matter-js": "^0.20.0",
+    "p5": "^1.11.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-draggable": "^4.4.6",
+    "react-matter-js": "^1.0.5",
+    "react-p5": "^1.4.1",
     "react-scripts": "5.0.1",
+    "sass": "^1.82.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
