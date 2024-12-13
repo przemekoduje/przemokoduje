@@ -9,7 +9,7 @@
 .canvas {
   
   display: block; /* Usuń margines domyślny */
-  background-color: #f7f7f7;
+  background-color: #000000;
   box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3);
   
 }
